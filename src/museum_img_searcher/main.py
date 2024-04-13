@@ -8,11 +8,11 @@ import torch
 from botocore.client import BaseClient as S3Client
 from torchvision import transforms, models as mdls
 
-from config import load_config
-from db import create_psql_session, Base
-from service.adder import add
-from service.searcher import search
-from utils.s3 import download_file
+from museum_img_searcher.config import load_config
+from museum_img_searcher.db import create_psql_session, Base
+from museum_img_searcher.service.adder import add
+from museum_img_searcher.service.searcher import search
+from museum_img_searcher.utils.s3 import download_file
 
 
 class Command(StrEnum):
@@ -41,7 +41,7 @@ def callback(route_key: str, s3_client: S3Client, bucket: str, encoder, transfor
 
             file = download_file(s3_client, bucket, f"searcher/{file_id}")
 
-            result = search(file)
+            result = search(file, encoder, transform, lazy_session)
             print(f" [x] Search took {time.time() - start_time} seconds")
 
             ch.basic_publish(
