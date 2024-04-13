@@ -1,4 +1,9 @@
+.idea/
 
+__pycache__/
+*.py[cod]
+*$py.class
 
 settings.json
 museum_img_searcher/train_dataset_mincult-train.zip
+.env
