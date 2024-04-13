@@ -32,17 +32,27 @@ class RabbitMQ:
 
 
 @dataclass
+class S3Config:
+    BUCKET: str
+    ENDPOINT_URL: str
+    PUBLIC_ENDPOINT_URL: str
+    REGION: str
+    ACCESS_KEY_ID: str
+    ACCESS_KEY: str
+
+
+@dataclass
 class Control:
     SEARCHER_TASKS_SENDER_ID: str
     SEARCHER_TASKS_RECEIVER_ID: str
     RABBITMQ: RabbitMQ
 
 
-
 @dataclass
 class Config:
     DEBUG: bool
     POSTGRESQL: PostgresConfig
+    S3: S3Config
     CONTROL: Control
 
 
@@ -99,5 +109,13 @@ def load_config() -> Config:
                 PASSWORD=config['CONTROL']['RABBITMQ']['PASSWORD'],
                 VHOST=config['CONTROL']['RABBITMQ']['VHOST']
             )
-        )
+        ),
+        S3=S3Config(
+            ENDPOINT_URL=config['s3']['endpoint_url'],
+            REGION=config['s3']['region'],
+            ACCESS_KEY_ID=config['s3']['access_key'],
+            ACCESS_KEY=config['s3']['secret_key'],
+            BUCKET=config['s3']['bucket'],
+            PUBLIC_ENDPOINT_URL=config['s3']['public_endpoint_url']
+        ),
     )
