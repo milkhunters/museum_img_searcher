@@ -2,10 +2,11 @@ import io
 
 
 def search(image: io.BytesIO) -> list[str]:
-
+    print(image)
     # ... some image processing code ...
+    print("что-то")
 
-    return ["dd9b505c-3cd9-4444-bd83-6456e2107441", "22d933a7-391d-43e0-b179-2320043db20a"]
+    return ["8b58cfd8-bb11-4704-b5dc-9f02b7c2ed47"]
 
 
 if __name__ == "__main__":
