@@ -1,8 +1,7 @@
-import base64
+import io
 
 
-def search(image_base64: str) -> list[str]:
-    image_bytes = base64.b64decode(image_base64)
+def search(image: io.BytesIO) -> list[str]:
 
     # ... some image processing code ...
 
@@ -11,4 +10,4 @@ def search(image_base64: str) -> list[str]:
 
 if __name__ == "__main__":
     with open("museum_img_searcher/images/22d933a7-391d-43e0-b179-2320043db20a.jpg", "rb") as file:
-        print(base64.b64encode(file.read()).decode())
+        print(search(io.BytesIO(file.read())))

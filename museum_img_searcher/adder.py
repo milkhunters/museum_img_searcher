@@ -1,5 +1,6 @@
+import io
 
 
-def add(file_id: str):
+def add(file: io.BytesIO, exhibit_id: str):
     # Add file to the database
     pass
