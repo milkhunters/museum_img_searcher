@@ -8,8 +8,8 @@ import pika
 from botocore.client import BaseClient as S3Client
 
 from museum_img_searcher.config import load_config
-from museum_img_searcher.searcher import search
-from museum_img_searcher.adder import add
+from service.searcher import search
+from service.adder import add
 from utils.s3 import download_file
 
 
@@ -25,17 +25,19 @@ def callback(route_key: str, s3_client: S3Client, bucket: str):
         data = json.loads(body)
         file_id = data["file_id"]
 
-        file = download_file(s3_client, bucket, f"searcher/{file_id}")
-
         if data["command"] == Command.ADD:
             print(f" [x] Received add task for file_id: {file_id}")
             exhibit_id = data["exhibit_id"]
+
+            file = download_file(s3_client, bucket, f"{exhibit_id}/{file_id}")
 
             add(file, exhibit_id)
             print(f" [x] Add took {time.time() - start_time} seconds")
         elif data["command"] == Command.SEARCH:
             print(f" [x] Received search task for file_id: {file_id}")
-            task_id = data["task_id"]
+
+            file = download_file(s3_client, bucket, f"searcher/{file_id}")
+
             result = search(file)
             print(f" [x] Search took {time.time() - start_time} seconds")
 
@@ -43,7 +45,7 @@ def callback(route_key: str, s3_client: S3Client, bucket: str):
                 exchange="",
                 routing_key=route_key,
                 body=json.dumps({
-                    "task_id": task_id,
+                    "file_id": file_id,
                     "result": result
                 }),
             )
