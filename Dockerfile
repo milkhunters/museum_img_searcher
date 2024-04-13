@@ -9,6 +9,6 @@ WORKDIR /code
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
-ENV PYTHONPATH=/code/museum_img_searcher
+ENV PYTHONPATH=/code/src
 
-CMD ["python", "museum_img_searcher/main.py"]
+CMD ["python", "src/museum_img_searcher/main.py"]
