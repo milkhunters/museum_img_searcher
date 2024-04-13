@@ -93,21 +93,21 @@ def load_config() -> Config:
     return Config(
         DEBUG=is_debug,
         POSTGRESQL=PostgresConfig(
-            DATABASE=config['POSTGRESQL']['DATABASE'],
-            USERNAME=config['POSTGRESQL']['USERNAME'],
-            PASSWORD=config['POSTGRESQL']['PASSWORD'],
-            HOST=config['POSTGRESQL']['HOST'],
-            PORT=config['POSTGRESQL'].get('PORT', 5432),
+            DATABASE=config['postgresql']['database'],
+            USERNAME=config['postgresql']['username'],
+            PASSWORD=config['postgresql']['password'],
+            HOST=config['postgresql']['host'],
+            PORT=config['postgresql'].get('port', 5432),
         ),
         CONTROL=Control(
-            SEARCHER_TASKS_SENDER_ID=config['CONTROL']['SEARCHER_TASKS_SENDER_ID'],
-            SEARCHER_TASKS_RECEIVER_ID=config['CONTROL']['SEARCHER_TASKS_RECEIVER_ID'],
+            SEARCHER_TASKS_SENDER_ID=config['control']['searcher_tasks_sender_id'],
+            SEARCHER_TASKS_RECEIVER_ID=config['control']['searcher_tasks_receiver_id'],
             RABBITMQ=RabbitMQ(
-                HOST=config['CONTROL']['RABBITMQ']['HOST'],
-                PORT=config['CONTROL']['RABBITMQ']['PORT'],
-                USERNAME=config['CONTROL']['RABBITMQ']['USERNAME'],
-                PASSWORD=config['CONTROL']['RABBITMQ']['PASSWORD'],
-                VHOST=config['CONTROL']['RABBITMQ']['VHOST']
+                HOST=config['control']['rabbitmq']['host'],
+                PORT=config['control']['rabbitmq']['port'],
+                USERNAME=config['control']['rabbitmq']['username'],
+                PASSWORD=config['control']['rabbitmq']['password'],
+                VHOST=config['control']['rabbitmq']['vhost']
             )
         ),
         S3=S3Config(
