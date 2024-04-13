@@ -1,14 +1,20 @@
 import io
 
+from PIL import Image
+from sqlalchemy import select
+from torch import Tensor
+from torchvision.models import Inception3
+from torchvision.transforms import Compose
 
-def search(image: io.BytesIO) -> list[str]:
-    print(image)
-    # ... some image processing code ...
-    print("что-то")
-
-    return ["8b58cfd8-bb11-4704-b5dc-9f02b7c2ed47"]
+from museum_img_searcher.domain import ImgVector
 
 
-if __name__ == "__main__":
-    with open("museum_img_searcher/images/22d933a7-391d-43e0-b179-2320043db20a.jpg", "rb") as file:
-        print(search(io.BytesIO(file.read())))
+def search(file: io.BytesIO, encoder: Inception3, transform: Compose, session) -> list[str]:
+    vector: Tensor = encoder(transform(Image.open(file)).unsqueeze(0))
+
+    with session() as s:
+        values = s.execute(
+            select(ImgVector).order_by(ImgVector.vector.l2_distance(vector.tolist()[0])).limit(10)
+        ).scalars().all()
+
+    return [str(value.exhibit_id) for value in values]

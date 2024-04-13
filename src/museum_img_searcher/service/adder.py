@@ -15,13 +15,11 @@ from museum_img_searcher.domain.img_vector import ImgVector
 
 def add(file: io.BytesIO, exhibit_id: str, encoder: Inception3, transform: Compose, session):
     vector: Tensor = encoder(transform(Image.open(file)).unsqueeze(0))
-    print(vector)
-    print(exhibit_id)
 
     with session() as s:
         item = ImgVector(
             exhibit_id=UUID(exhibit_id),
-            vector=vector,
+            vector=vector.tolist()[0],
         )
         s.add(item)
         s.commit()
