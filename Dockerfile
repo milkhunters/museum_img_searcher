@@ -1,14 +1,15 @@
-FROM python:3.12
+FROM python:3.10
 
 
-RUN pip install poetry
+RUN mkdir /app
 
-COPY . /code
-WORKDIR /code
+COPY . /app/code
+WORKDIR /app/code
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+RUN python -m venv venv
+RUN . venv/bin/activate
+RUN pip install -e .
 
-ENV PYTHONPATH=/code/src
+ENV PYTHONPATH=/app/code/src
 
 CMD ["python", "src/museum_img_searcher/main.py"]
