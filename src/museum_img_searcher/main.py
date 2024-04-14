@@ -3,6 +3,7 @@ import time
 from enum import StrEnum
 
 import boto3
+import joblib
 import pika
 import torch
 from botocore.client import BaseClient as S3Client
@@ -20,7 +21,7 @@ class Command(StrEnum):
     ADD = "add"
 
 
-def callback(route_key: str, s3_client: S3Client, bucket: str, encoder, transform, lazy_session):
+def callback(route_key: str, s3_client: S3Client, bucket: str, encoder, transform, lazy_session, classificator):
     def wrap(ch, method, properties, body: str):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         start_time = time.time()
@@ -41,7 +42,7 @@ def callback(route_key: str, s3_client: S3Client, bucket: str, encoder, transfor
 
             file = download_file(s3_client, bucket, f"searcher/{file_id}")
 
-            result = search(file, encoder, transform, lazy_session)
+            classif, result = search(file, encoder, transform, lazy_session, classificator)
             print(f" [x] Search took {time.time() - start_time} seconds")
 
             ch.basic_publish(
@@ -49,6 +50,7 @@ def callback(route_key: str, s3_client: S3Client, bucket: str, encoder, transfor
                 routing_key=route_key,
                 body=json.dumps({
                     "file_id": file_id,
+                    "classif": classif,
                     "result": result
                 }),
             )
@@ -73,6 +75,8 @@ def main():
 
     encoder = mdls.inception_v3(pretrained=True, aux_logits=True)
     encoder.eval()
+
+    classificator = joblib.load("ensemble_image_classifierv3.pkl")
 
     engine, lazy_session = create_psql_session(
         config.POSTGRESQL.USERNAME,
@@ -135,7 +139,8 @@ def main():
             config.S3.BUCKET,
             encoder,
             transform,
-            lazy_session
+            lazy_session,
+            classificator
         ),
     )
 
